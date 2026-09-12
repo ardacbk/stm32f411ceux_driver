@@ -27,6 +27,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     Core/Src/sysmem.c
     startup_stm32f411xe.s
     ${USER_DRIVER_SOURCES}
+    Drivers/Inc/stm32f411xx.h
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE

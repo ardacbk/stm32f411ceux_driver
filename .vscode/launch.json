@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "stlinkgdbtarget",
+            "request": "launch",
+            "name": "STM32Cube: Launch ST-Link GDB Server",
+            "deviceName": "STM32F411CEU6",
+            "deviceCore": "Cortex-M4",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/build/Debug/stm32f411ceux_drivers.elf",
+            "imagesAndSymbols": [
+                {
+                    "imageFileName": "${workspaceFolder}/build/Debug/stm32f411ceux_drivers.elf",
+                    "symbolFileName": "${workspaceFolder}/build/Debug/stm32f411ceux_drivers.elf"
+                }
+            ],
+            "serverInterface": "SWD"
+        }
+    ]
+}

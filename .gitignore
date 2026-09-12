@@ -1,0 +1,34 @@
+# Derleme / Build Çıktıları
+build/
+bin/
+obj/
+out/
+cmake-build-*/
+
+# Gömülü Sistem Çıktıları (İkili ve Ara Dosyalar)
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.obj
+*.d
+*.su
+
+# CMake & Clangd Geçici Dosyaları
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+.cache/
+
+# STM32CubeMX / IDE Artıkları
+mx.scratch
+!.settings
+
+# VS Code ve Editör Dosyaları
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.DS_Store
+Thumbs.db

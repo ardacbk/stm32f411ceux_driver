@@ -1,7 +1,7 @@
 #ifndef STM32F411XX_H_
 #define STM32F411XX_H_
 
-#include "stm32f411xe.h"
+#include "stm32f4xx.h"
 
 /* ===================== ENABLE MACROS ================*/
  

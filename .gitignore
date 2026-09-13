@@ -23,7 +23,7 @@ compile_commands.json
 
 # STM32CubeMX / IDE Artıkları
 mx.scratch
-!.settings
+.settings/
 
 # VS Code ve Editör Dosyaları
 .vscode/*

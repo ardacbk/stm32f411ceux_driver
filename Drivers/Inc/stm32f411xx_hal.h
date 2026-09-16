@@ -67,5 +67,12 @@
 #define SYSCFG_CLK_DI() (RCC->APB2ENR &= ~(1U << 14))
 
 
+// GPIOx Reset macros
+#define GPIOA_REG_RESET()       do{ RCC->AHB1RSTR |= (1U << 0); RCC->AHB1RSTR &= ~(1U << 0);}while(0)
+#define GPIOB_REG_RESET()       do{ RCC->AHB1RSTR |= (1U << 1); RCC->AHB1RSTR &= ~(1U << 1);}while(0)
+#define GPIOC_REG_RESET()       do{ RCC->AHB1RSTR |= (1U << 2); RCC->AHB1RSTR &= ~(1U << 2);}while(0)
+#define GPIOD_REG_RESET()       do{ RCC->AHB1RSTR |= (1U << 3); RCC->AHB1RSTR &= ~(1U << 3);}while(0)
+#define GPIOE_REG_RESET()       do{ RCC->AHB1RSTR |= (1U << 4); RCC->AHB1RSTR &= ~(1U << 4);}while(0)
+#define GPIOH_REG_RESET()       do{ RCC->AHB1RSTR |= (1U << 7); RCC->AHB1RSTR &= ~(1U << 7);}while(0)
 
 #endif /* STM32F411XX_H_ */

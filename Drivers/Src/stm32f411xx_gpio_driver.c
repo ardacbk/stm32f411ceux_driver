@@ -1,6 +1,7 @@
 #include "stm32f411xx_gpio_driver.h"
 #include "stm32f411xx_hal.h"
 #include "stm32f4xx.h"
+#include <stdint.h>
 
 
 // Peripheral Clock Setup
@@ -86,36 +87,54 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
     }
 }
 
-
-// WILL BE ADDED
-/*
-void GPIO_DeInit(GPIO_TypeDef *pGPIOx){
-
+void GPIO_DeInit(GPIO_TypeDef *pGPIOx) {
+  if (pGPIOx == GPIOA) {
+    GPIOA_REG_RESET();
+  } else if (pGPIOx == GPIOB) {
+    GPIOB_REG_RESET();
+  } else if (pGPIOx == GPIOC) {
+    GPIOC_REG_RESET();
+  } else if (pGPIOx == GPIOD) {
+    GPIOD_REG_RESET();
+  } else if (pGPIOx == GPIOE) {
+    GPIOE_REG_RESET();
+  } else if (pGPIOx == GPIOH) {
+    GPIOH_REG_RESET();
+  }
 }
-
 
 // Data read and write
 uint8_t GPIO_ReadFromInputPin(GPIO_TypeDef *pGPIOx, uint8_t PinNumber){
-
+    uint8_t value;
+    value = (uint8_t) ((pGPIOx->IDR >> PinNumber) & 0x1U);
+    return value;
 }
 uint16_t GPIO_ReadFromInputPort(GPIO_TypeDef *pGPIOx){
-
+    uint16_t value;
+    value = (uint16_t) pGPIOx->IDR;
+    return value;
 }
 void GPIO_WriteToOutputPin(GPIO_TypeDef *pGPIOx, uint8_t PinNumber, uint8_t Value){
 
-}
-void GPIO_WriteToOutputPort(GPIO_TypeDef *pGPIOx, uint8_t Value){
+    if(Value == SET){
+        pGPIOx->ODR |= (1U << PinNumber);
+    }
+    else {
+        pGPIOx->ODR &= ~(1U << PinNumber);
+    }
 
+}
+void GPIO_WriteToOutputPort(GPIO_TypeDef *pGPIOx, uint16_t Value){
+    pGPIOx->ODR = Value;
 }
 void GPIO_ToggleOutputPin(GPIO_TypeDef *pGPIOx, uint8_t PinNumber){
-
+    pGPIOx->ODR ^= (1U << PinNumber);
 }
-
 // Interrupt
+// Will be added
 void GPIO_IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, FunctionalState EnorDi){
 
 }
 void GPIO_IRQHandler(uint8_t PinNumber){
 
 }
-*/

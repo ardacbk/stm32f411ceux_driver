@@ -96,7 +96,7 @@ void GPIO_DeInit(GPIO_TypeDef *pGPIOx);
 uint8_t GPIO_ReadFromInputPin(GPIO_TypeDef *pGPIOx, uint8_t PinNumber);
 uint16_t GPIO_ReadFromInputPort(GPIO_TypeDef *pGPIOx);
 void GPIO_WriteToOutputPin(GPIO_TypeDef *pGPIOx, uint8_t PinNumber, uint8_t Value);
-void GPIO_WriteToOutputPort(GPIO_TypeDef *pGPIOx, uint8_t Value);
+void GPIO_WriteToOutputPort(GPIO_TypeDef *pGPIOx, uint16_t Value);
 void GPIO_ToggleOutputPin(GPIO_TypeDef *pGPIOx, uint8_t PinNumber);
 
 // Interrupt

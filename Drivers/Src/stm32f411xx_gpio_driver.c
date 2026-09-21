@@ -1,4 +1,5 @@
 #include "stm32f411xx_gpio_driver.h"
+#include "stm32f411xe.h"
 #include "stm32f411xx_hal.h"
 #include "stm32f4xx.h"
 #include <stdint.h>
@@ -61,7 +62,27 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle){
         pGPIOHandle->pGPIOx->MODER |= (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode << (2 * pin));
     }
     else{ // Interrupt mode
-        // Will be added later
+        if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_FT){
+            EXTI->FTSR |= (0X1U << pin);
+            EXTI->RTSR &= ~(0X1U << pin); // Clear the rising edge register
+        } else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_RT){
+            EXTI->RTSR |= (0X1U << pin);
+            EXTI->FTSR &= ~(0X1U << pin); // Clear the falling edge register
+        }else if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_RFT) {
+            EXTI->RTSR |= (0X1U << pin);
+            EXTI->FTSR |= (0X1U << pin);        
+        }
+        SYSCFG_CLK_EN();
+        uint8_t port_code = gpio_get_port_code(pGPIOHandle->pGPIOx); 
+        uint8_t exticr_idx = pin / 4;
+        uint8_t exticr_pos = pin % 4;
+
+        //Set GPIO pin to input
+        pGPIOHandle->pGPIOx->MODER &= ~(0x3U << (pin * 2));
+
+        EXTI->IMR |= (0x1U << pin); // Remove the bit mask
+        SYSCFG->EXTICR[exticr_idx] &= ~(0xFU << (exticr_pos * 4)); // Clear the EXTICR bit
+        SYSCFG->EXTICR[exticr_idx] |= (port_code << (exticr_pos * 4)); // set the EXTICR bit
     }
 
     // Configure output type register
@@ -131,10 +152,22 @@ void GPIO_ToggleOutputPin(GPIO_TypeDef *pGPIOx, uint8_t PinNumber){
     pGPIOx->ODR ^= (1U << PinNumber);
 }
 // Interrupt
-// Will be added
-void GPIO_IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, FunctionalState EnorDi){
-
+void GPIO_IRQInterruptConfig(uint8_t IRQNumber, FunctionalState EnorDi){
+    if(EnorDi == ENABLE){
+        NVIC_EnableIRQ((IRQn_Type) IRQNumber);
+    }
+    else{
+        NVIC_DisableIRQ((IRQn_Type)IRQNumber);
+    }
 }
-void GPIO_IRQHandler(uint8_t PinNumber){
 
+void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority){
+    NVIC_SetPriority((IRQn_Type)IRQNumber, (uint32_t)IRQPriority);
+}
+
+
+void GPIO_IRQHandler(uint8_t PinNumber){
+    if(EXTI->PR & (0x1U << PinNumber)){
+        EXTI->PR = (0x1U << PinNumber); // Dont use |= to prevent race condition
+    }
 }

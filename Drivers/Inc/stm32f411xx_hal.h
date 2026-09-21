@@ -1,6 +1,7 @@
 #ifndef STM32F411XX_H_
 #define STM32F411XX_H_
 
+#include "stm32f411xe.h"
 #include "stm32f4xx.h"
 
 /* ===================== ENABLE MACROS ================*/
@@ -74,5 +75,17 @@
 #define GPIOD_REG_RESET()       do{ RCC->AHB1RSTR |= (1U << 3); RCC->AHB1RSTR &= ~(1U << 3);}while(0)
 #define GPIOE_REG_RESET()       do{ RCC->AHB1RSTR |= (1U << 4); RCC->AHB1RSTR &= ~(1U << 4);}while(0)
 #define GPIOH_REG_RESET()       do{ RCC->AHB1RSTR |= (1U << 7); RCC->AHB1RSTR &= ~(1U << 7);}while(0)
+
+
+// Port code decoder
+static inline uint8_t gpio_get_port_code(const GPIO_TypeDef *pGpiox){
+    if(pGpiox == GPIOA){return 0x00U;}
+    if(pGpiox == GPIOB){return 0x01U;}
+    if(pGpiox == GPIOC){return 0x02U;}
+    if(pGpiox == GPIOD){return 0x03U;}
+    if(pGpiox == GPIOE){return 0x04U;}
+    if(pGpiox == GPIOH){return 0x07U;}
+    return 0x00U;
+}
 
 #endif /* STM32F411XX_H_ */

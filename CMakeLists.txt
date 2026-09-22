@@ -27,6 +27,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     Core/Src/sysmem.c
     startup_stm32f411xe.s
     ${USER_DRIVER_SOURCES}
+    BSP/Src/keypad.c
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -34,6 +35,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     Drivers/Inc
     Drivers/CMSIS/Device/ST/STM32F4xx/Include
     Drivers/CMSIS/Include
+    BSP/Inc
 )
 
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE

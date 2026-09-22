@@ -182,13 +182,8 @@ uint16_t GPIO_ReadFromInputPort(GPIO_TypeDef *pGPIOx){
  */
 void GPIO_WriteToOutputPin(GPIO_TypeDef *pGPIOx, uint8_t PinNumber, uint8_t Value){
 
-    if(Value == SET){
-        pGPIOx->ODR |= (1U << PinNumber);
-    }
-    else {
-        pGPIOx->ODR &= ~(1U << PinNumber);
-    }
-
+    uint32_t shift = (Value == SET) ? 0U : 16U;
+    pGPIOx->BSRR = (1U << (PinNumber + shift));
 }
 
 /**
@@ -208,7 +203,11 @@ void GPIO_WriteToOutputPort(GPIO_TypeDef *pGPIOx, uint16_t Value){
  * @return None
  */
 void GPIO_ToggleOutputPin(GPIO_TypeDef *pGPIOx, uint8_t PinNumber){
-    pGPIOx->ODR ^= (1U << PinNumber);
+    if((pGPIOx->ODR & (1U << PinNumber)) != 0U){
+        pGPIOx->BSRR = (1U << (PinNumber + 16U));
+    }else {
+        pGPIOx->BSRR = (1U << PinNumber);
+    }
 }
 
 /* ============================================================================

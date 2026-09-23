@@ -39,6 +39,18 @@ Rather than relying on high-level vendor abstraction layers (such as STM32Cube H
   - Core interrupt management using ARM Cortex-M NVIC (`NVIC_EnableIRQ`, `NVIC_DisableIRQ`, `NVIC_SetPriority`).
   - Safe, race-condition-free pending flag clearance mechanism for `EXTI->PR` (`rc_w1`).
 
+### 🟢 SysTick Timer Driver (`stm32f411xx_systick_driver`)
+- [x] **1 ms Time Base:** Precise 1 ms millisecond time base using ARM Cortex-M4 internal 24-bit SysTick down-counter.
+- [x] **Clock Awareness:** Dynamically synchronized with `SystemCoreClock` (16 MHz HSI default or PLL).
+- [x] **Non-Blocking Millisecond Counter:** Global millisecond tracking (`SysTick_Get_Ms()`) via `SysTick_Handler` interrupt for timestamping and delta-time measurements without CPU-blocking loops.
+
+### 🟢 4x4 Matrix Keypad BSP Driver (`keypad`)
+- [x] **Layered Hardware Abstraction:** Built cleanly on top of `stm32f411xx_gpio_driver` without touching raw registers in user code.
+- [x] **Active Column Scanning:** Sequentially driving active column HIGH (Push-Pull) with internal Pull-Down row sampling.
+- [x] **Signal Settling Delay:** Volatile NOP delay to ensure capacitance stabilization and reliable logic thresholds before reading inputs.
+- [x] **Non-Blocking Debounce FSM:** 3-state Finite State Machine (`IDLE` ➔ `DEBOUNCE` ➔ `PRESSED`) filtering mechanical contact bounce using SysTick timestamps.
+- [x] **Single-Press Semantics:** Key release detection ensuring a held key is reported exactly once without flooding.
+
 ---
 
 ## 🗺️ Roadmap (Upcoming Drivers)
@@ -63,16 +75,26 @@ The repository will expand to include bare-metal drivers for key serial communic
 
 ```text
 stm32f411ceux_drivers/
-├── Core/
+├── BSP/                               # Board Support Package (External Modules)
+│   ├── Inc/
+│   │   └── keypad.h                   # 4x4 Keypad definitions & FSM types
 │   └── Src/
-│       └── main.c                     # Application entry point & driver test code
+│       └── keypad.c                   # Keypad scanning & debounce implementation
+├── Core/
+│   ├── Inc/
+│   │   └── system_stm32f4xx.h         # System clock header
+│   └── Src/
+│       ├── main.c                     # Application entry point & driver test code
+│       └── system_stm32f4xx.c         # Clock tree initialization & SystemCoreClock
 ├── Drivers/
 │   ├── CMSIS/                         # ARM Cortex-M4 core definitions & headers
 │   ├── Inc/
 │   │   ├── stm32f411xx_hal.h          # Peripheral base addresses & clock macros
-│   │   └── stm32f411xx_gpio_driver.h  # GPIO driver API declarations & data structures
+│   │   ├── stm32f411xx_gpio_driver.h  # GPIO driver API declarations & data structures
+│   │   └── stm32f411xx_systick_driver.h # SysTick timer API declarations
 │   └── Src/
-│       └── stm32f411xx_gpio_driver.c  # GPIO driver implementation & Doxygen docs
+│       ├── stm32f411xx_gpio_driver.c  # GPIO driver implementation & Doxygen docs
+│       └── stm32f411xx_systick_driver.c # SysTick timer implementation & interrupt handler
 ├── cmake/                             # CMake toolchain configuration
 ├── CMakeLists.txt                     # Project build rules
 ├── CMakePresets.json                  # Presets for Debug and Release builds

@@ -2,45 +2,44 @@
 #include "stm32f411xe.h"
 #include "stm32f411xx_gpio_driver.h"
 #include "stm32f411xx_hal.h"
+#include "stm32f411xx_systick_driver.h"
 #include "stm32f4xx.h"
+#include "keypad.h"
+#include "system_stm32f4xx.h"
 
-// Very primitive delay function
-// Just for testing purposes
-void delay(void){
 
-    for(volatile uint32_t i=0; i<500000; i++);
-}
 
 int main(void)
 {
-    GPIO_Handle_t GpioLed = {0};
-    GPIO_Handle_t GpioButton = {0};
+
+    SysTick_Init(SystemCoreClock);
     
-    GpioLed.pGPIOx = GPIOC;
-    GpioLed.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_13;
-    GpioLed.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
-    GpioLed.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_OUT;
     
+    
+    // Row1 = PB10 // Row2 = PB12 // Row3 = PB13 // Row4 = PB14
+    // Col1 = PA1  // Col2 = PA2  // Col3 = PA3  // Col4 = PA4
+    Keypad_t kp = {
+        .rows = {
+            {.pGPIOx = GPIOB, .GPIO_PinConfig = {.GPIO_PinNumber = GPIO_PIN_NO_10} },   //PB10
+            {.pGPIOx = GPIOB, .GPIO_PinConfig = {.GPIO_PinNumber = GPIO_PIN_NO_12} },   //PB12
+            {.pGPIOx = GPIOB, .GPIO_PinConfig = {.GPIO_PinNumber = GPIO_PIN_NO_13} },   //PB13
+            {.pGPIOx = GPIOB, .GPIO_PinConfig = {.GPIO_PinNumber = GPIO_PIN_NO_14} },   //PB14
+        },
+        .cols = {
+        {.pGPIOx = GPIOA, .GPIO_PinConfig = {.GPIO_PinNumber = GPIO_PIN_NO_1} },    //PA1
+        {.pGPIOx = GPIOA, .GPIO_PinConfig = {.GPIO_PinNumber = GPIO_PIN_NO_2} },    //PA2
+        {.pGPIOx = GPIOA, .GPIO_PinConfig = {.GPIO_PinNumber = GPIO_PIN_NO_3} },    //PA3
+        {.pGPIOx = GPIOA, .GPIO_PinConfig = {.GPIO_PinNumber = GPIO_PIN_NO_4} },    //PA4
 
+        },
+        .debounce_ms = 20
+    };
 
-    GpioButton.pGPIOx = GPIOA;
-    GpioButton.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_0;
-    GpioButton.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_IN;
-    GpioButton.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;
-    GPIO_PeriClockControl(GPIOA, ENABLE);
-    GPIO_PeriClockControl(GPIOC, ENABLE);
-    GPIO_Init(&GpioLed);
-    GPIO_Init(&GpioButton);
-
-    GPIO_WriteToOutputPin(GPIOC, GPIO_PIN_NO_13, ENABLE);
-
-    uint8_t prev_button_state = 1;
-    while (1)
-    {
-        uint8_t new_button_state = GPIO_ReadFromInputPin(GPIOA, GPIO_PIN_NO_0);
-        if(prev_button_state == 1 && new_button_state == 0){
-            GPIO_ToggleOutputPin(GPIOC, GPIO_PIN_NO_13);
+    Keypad_Init(&kp);
+    while(1){
+        char key = Keypad_Scan(&kp, SysTick_Get_Ms());
+        if(key != '\0'){
+            char found = key; // Added for debugging
         }
-        prev_button_state = new_button_state;
     }
 }
